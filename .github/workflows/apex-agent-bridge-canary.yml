@@ -60,7 +60,10 @@ jobs:
           set -euo pipefail
           test "$GITHUB_ACTOR" = "GlacierEQ"
           test "$GITHUB_REPOSITORY" = "$EXPECTED_REPO"
-          python3 -m py_compile /dev/null
+          python3 - <<'PY'
+          compile("pass\n", "apex-canary", "exec")
+          print("PYTHON_RUNTIME_OK")
+          PY
           workflow_sha="$(sha256sum .github/workflows/apex-agent-bridge-canary.yml | cut -d' ' -f1)"
           test -n "$workflow_sha"
           echo "PUBLIC_CANARY_WORKFLOW_SHA256=${workflow_sha}"
