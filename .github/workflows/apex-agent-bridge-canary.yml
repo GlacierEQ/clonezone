@@ -1,0 +1,91 @@
+name: APEX Connector-Mediated Public Canary
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - .github/workflows/apex-agent-bridge-canary.yml
+
+permissions:
+  contents: read
+
+jobs:
+  canary:
+    name: bootstrap-canary-20260717-001
+    if: >-
+      github.actor == 'GlacierEQ' &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      JOB_ID: bootstrap-canary-20260717-001
+      EXPECTED_REPO: GlacierEQ/clonezone
+      EXPECTED_OWNER_ID: "194243768"
+      EXPECTED_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+
+    steps:
+      - name: Checkout exact public canary source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Bind public repository owner and exact source SHA
+        shell: bash
+        run: |
+          set -euo pipefail
+          actual_sha="$(git rev-parse HEAD)"
+          test "$actual_sha" = "$EXPECTED_HEAD_SHA"
+          test -z "$(git status --porcelain --untracked-files=no)"
+          python3 - <<'PY'
+          import json
+          import os
+          import urllib.request
+
+          with urllib.request.urlopen(
+              f"https://api.github.com/repos/{os.environ['EXPECTED_REPO']}", timeout=30
+          ) as response:
+              repo = json.load(response)
+          assert repo["full_name"] == os.environ["EXPECTED_REPO"]
+          assert str(repo["owner"]["id"]) == os.environ["EXPECTED_OWNER_ID"]
+          assert repo["visibility"] == "public"
+          assert repo["private"] is False
+          PY
+          echo "PUBLIC_CANARY_SOURCE_SHA=${actual_sha}"
+
+      - name: Verify canary workflow integrity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_ACTOR" = "GlacierEQ"
+          test "$GITHUB_REPOSITORY" = "$EXPECTED_REPO"
+          python3 -m py_compile /dev/null
+          workflow_sha="$(sha256sum .github/workflows/apex-agent-bridge-canary.yml | cut -d' ' -f1)"
+          test -n "$workflow_sha"
+          echo "PUBLIC_CANARY_WORKFLOW_SHA256=${workflow_sha}"
+
+      - name: Emit sanitized public canary result
+        shell: bash
+        run: |
+          set -euo pipefail
+          source_sha="$(git rev-parse HEAD)"
+          workflow_sha="$(sha256sum .github/workflows/apex-agent-bridge-canary.yml | cut -d' ' -f1)"
+          python3 - <<PY
+          import json
+          print("PUBLIC_CANARY_RESULT=" + json.dumps({
+              "schema_version": "1.0",
+              "job_id": "${JOB_ID}",
+              "status": "completed",
+              "execution_mode": "connector-mediated-bootstrap",
+              "execution_repo": "${GITHUB_REPOSITORY}",
+              "workflow": "${GITHUB_WORKFLOW}",
+              "run_id": "${GITHUB_RUN_ID}",
+              "run_attempt": "${GITHUB_RUN_ATTEMPT}",
+              "actor": "${GITHUB_ACTOR}",
+              "source_sha": "${source_sha}",
+              "workflow_sha256": "${workflow_sha}",
+              "private_actions_used": False,
+              "secret_values_used": False
+          }, sort_keys=True))
+          PY
