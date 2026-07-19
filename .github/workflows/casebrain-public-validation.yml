@@ -23,7 +23,7 @@ jobs:
     env:
       SOURCE_REPO: GlacierEQ/AEON-777
       SOURCE_REF: casebrain-actor-registry-v1
-      EXPECTED_SOURCE_SHA: e816e0718a7571d26b0163fe22e03847900ce0e1
+      EXPECTED_SOURCE_SHA: 10e7cf6f6511885c1d772eb9e3627ba284dc1fe5
     steps:
       - name: Checkout public runner face
         uses: actions/checkout@v4
@@ -101,7 +101,11 @@ jobs:
               workload/BRAIN/CONNECTORS/MEMORY_QUARANTINE_REGISTRY_SCHEMA.json \
               workload/BRAIN/CONNECTORS/MEMORY_RECALL_REGRESSION_SCHEMA.json \
               workload/BRAIN/CONNECTORS/MEMORY_RECALL_REGRESSION_2026-07-17.json \
-              workload/BRAIN/CONNECTORS/MEMORY_ARCHITECTURE_DELTA_2026-07-17.md
+              workload/BRAIN/CONNECTORS/MEMORY_ARCHITECTURE_DELTA_2026-07-17.md \
+              workload/BRAIN/CONNECTORS/MEMORY_RETRIEVAL_GUARD_SCHEMA.json \
+              workload/BRAIN/CONNECTORS/MEMORY_RETRIEVAL_GUARD_FIXTURE_2026-07-18.json \
+              workload/BRAIN/CONNECTORS/MEMORY_RETRIEVAL_GUARD.md \
+              workload/BRAIN/CONNECTORS/MEMORY_ARCHITECTURE_DELTA_2026-07-18.md
           } | tee validation-receipt/CASEBRAIN_PUBLIC_VALIDATION_RECEIPT.txt
 
       - name: Upload validation receipt
