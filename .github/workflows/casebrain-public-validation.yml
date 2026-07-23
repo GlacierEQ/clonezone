@@ -23,7 +23,7 @@ jobs:
     env:
       SOURCE_REPO: GlacierEQ/AEON-777
       SOURCE_REF: casebrain-actor-registry-v1
-      EXPECTED_SOURCE_SHA: 3c399b118c09875f1971a2369faae760b2b5494d
+      EXPECTED_SOURCE_SHA: bf8562621e13b880b982c6c57358b02220c28a1b
     steps:
       - name: Checkout public runner face
         uses: actions/checkout@v4
