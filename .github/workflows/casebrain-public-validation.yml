@@ -22,8 +22,8 @@ jobs:
     timeout-minutes: 15
     env:
       SOURCE_REPO: GlacierEQ/AEON-777
-      SOURCE_REF: casebrain-actor-registry-v1
-      EXPECTED_SOURCE_SHA: bf8562621e13b880b982c6c57358b02220c28a1b
+      SOURCE_REF: casebrain-memory-deletion-tombstone-v1
+      EXPECTED_SOURCE_SHA: 0aeecdf5b38bc2327bff28ac7d8f5e8bf92686c5
     steps:
       - name: Checkout public runner face
         uses: actions/checkout@v4
@@ -120,7 +120,14 @@ jobs:
               workload/BRAIN/CONNECTORS/MEMORY_NAMESPACE_CONTROL.json \
               workload/BRAIN/CONNECTORS/MEMORY_REPLAY_RECEIPT_SCHEMA.json \
               workload/BRAIN/CONNECTORS/MEMORY_REPLAY_RECEIPT_2026-07-22.json \
-              workload/BRAIN/CONNECTORS/MEMORY_ARCHITECTURE_DELTA_2026-07-22.md
+              workload/BRAIN/CONNECTORS/MEMORY_ARCHITECTURE_DELTA_2026-07-22.md \
+              workload/BRAIN/CONNECTORS/MEMORY_RETENTION_DELETION_POLICY_SCHEMA.json \
+              workload/BRAIN/CONNECTORS/MEMORY_RETENTION_DELETION_POLICY.json \
+              workload/BRAIN/CONNECTORS/MEMORY_DELETION_RECEIPT_SCHEMA.json \
+              workload/BRAIN/CONNECTORS/MEMORY_DELETION_RECEIPT_2026-07-23.json \
+              workload/BRAIN/CONNECTORS/MEMORY_TOMBSTONE_REGISTRY_SCHEMA.json \
+              workload/BRAIN/CONNECTORS/MEMORY_TOMBSTONE_REGISTRY.json \
+              workload/BRAIN/CONNECTORS/MEMORY_ARCHITECTURE_DELTA_2026-07-23.md
           } | tee validation-receipt/CASEBRAIN_PUBLIC_VALIDATION_RECEIPT.txt
 
       - name: Upload validation receipt
